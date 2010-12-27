@@ -15,6 +15,7 @@ module Jsystant
 
     def create(project)
       self.behavior = :revoke if options[:destroy]
+      @project = project
       directory("create", project)
     end
   end

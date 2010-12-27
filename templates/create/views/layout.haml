@@ -1,0 +1,19 @@
+!!!
+%html
+  %head
+    %title <%= @project %>
+    %head
+      %link(href="http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:light,regular,bold&amp;subset=latin" rel="stylesheet" type="text/css")
+
+      %link(href="/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css")
+      %link(href="/css/print.css" media="print" rel="stylesheet" type="text/css")
+      /[if lt IE 8]
+        %link(href="/css/ie.css" media="screen, projection" rel="stylesheet" type="text/css")
+
+  %body
+    #container
+      #header
+      #sidebar
+      #content
+        = yield
+      #footer
