@@ -19,4 +19,5 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
   s.add_dependency("thor", ">= 0.14.6")
+  s.add_dependency("compass", ">= 0.10.6")
 end
