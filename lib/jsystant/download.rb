@@ -19,6 +19,13 @@ module Jsystant
       download_js(url, :vendor => false)
     end
 
+    desc "underscorejs VERSION", "Download underscore.js"
+    def underscorejs(version)
+      version = latest_version_for(:underscorejs) if version == LATEST_VERSION
+      url = "https://github.com/documentcloud/underscore/raw/#{version}/underscore-min.js"
+      download_js(url)
+    end
+
     private
 
     def download_js(url, opts = {:vendor => true})
@@ -50,6 +57,13 @@ module Jsystant
             :url => "http://jquery.com/",
             :css => "p.jq-version",
             :regexp => /^Current Release: v([\d.]+)$/
+          }
+        },
+        :underscorejs => {
+          :latest_version => {
+            :url => "http://documentcloud.github.com/underscore/",
+            :css => 'a[href="underscore-min.js"]',
+            :regexp => /^Production Version \(([\d.]+)\)$/
           }
         }
       }
