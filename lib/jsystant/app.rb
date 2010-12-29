@@ -4,6 +4,7 @@ require "thor/actions"
 module Jsystant
   class App < Thor
     include Thor::Actions
+    include Download
 
     attr_accessor :project
 
@@ -23,8 +24,14 @@ module Jsystant
       copy_file("sinatra/app.rb", "app.rb")
       template("sinatra/views/layout.haml.tt", "views/layout.haml")
       template("sinatra/views/index.haml.tt", "views/index.haml")
-      invoke("jsystant:download:requirejs", %w(latest latest))
-      invoke("jsystant:download:underscorejs", %w(latest))
+      download_library(:requirejs, :latest, :latest)
+      download_library(:jquery, :latest)
+      download_library(:underscorejs, :latest)
+      download_library(:backbone, :latest)
+      # invoke("jsystant:download:library", %w(requirejs latest latest))
+      # invoke("jsystant:download:library", %w(jquery latest))
+      # invoke("jsystant:download:library", %w(underscorejs latest))
+      # invoke("jsystant:download:library", %w(backbone latest))
     end
   end
 

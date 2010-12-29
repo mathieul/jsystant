@@ -4,29 +4,35 @@ require "nokogiri"
 require "open-uri"
 
 module Jsystant
-  class Download < Thor
-    include Thor::Actions
+  module Download
 
-    UNKNOWN_VERSION = "unknown"
-    LATEST_VERSION = "latest"
+    def download_library(name, version, jquery = nil)
+      name, version = name.intern, version.intern
+      jquery = jquery.intern unless jquery.nil?
 
-    desc "requirejs REQUIREJS_VERSION [JQUERY_VERSION]", "Download require.js"
-    def requirejs(requirejs_version, jquery_version)
-      requirejs_version = latest_version_for(:requirejs) if requirejs_version == LATEST_VERSION
-      jquery_version = latest_version_for(:jquery) if jquery_version == LATEST_VERSION
-      url = "http://requirejs.org/docs/release/#{requirejs_version}/minified/"
-      url += jquery_version.nil? ? "require.js" : "require-jquery-#{jquery_version}.js"
-      download_js(url, :vendor => false)
-    end
+      info = libraries_config[name]
+      raise "Unknown library #{name}!" unless info
+      version = latest_version(info[:latest_version]) if version == :latest
+      raise "Unknown version for library #{name.inspect}" unless version
 
-    desc "underscorejs VERSION", "Download underscore.js"
-    def underscorejs(version)
-      version = latest_version_for(:underscorejs) if version == LATEST_VERSION
-      url = "https://github.com/documentcloud/underscore/raw/#{version}/underscore-min.js"
-      download_js(url)
+      jquery = nil unless info[:other_download]
+      jquery = latest_version(libraries_config[:jquery][:latest_version]) if jquery == :latest
+
+      url_tpl = jquery.nil? ? info[:download] : info[:other_download]
+      context = create_context_with(:version => version, :jquery => jquery)
+      url = ERB.new(url_tpl).result(context)
+      download_js(url, :vendor => info[:vendor])
     end
 
     private
+
+    def create_context_with(parameters)
+      context = Object.new
+      parameters.each do |name, value|
+        context.instance_variable_set("@#{name}".intern, value)
+      end
+      context.instance_eval { binding }
+    end
 
     def download_js(url, opts = {:vendor => true})
       destination = File.join("public", "javascripts")
@@ -35,17 +41,20 @@ module Jsystant
       get(url, destination)
     end
 
-    def latest_version_for(library)
-      config = libraries_config[library][:latest_version] rescue nil
-      return UNKNOWN_VERSION unless config
+    def latest_version(config)
       doc = Nokogiri::HTML(open(config[:url]))
-      info = doc.css(config[:css]).first.content rescue UNKNOWN_VERSION
+      info = doc.css(config[:css]).first.content
       info.sub!(config[:regexp], '\1')
+    rescue
+      nil
     end
 
     def libraries_config
       {
         :requirejs => {
+          :download => "http://requirejs.org/docs/release/<%= @version %>/minified/require.js",
+          :other_download => "http://requirejs.org/docs/release/<%= @version %>/minified/require-jquery-<%= @jquery %>.js",
+          :vendor => false,
           :latest_version => {
             :url => "http://requirejs.org/docs/download.html",
             :css => 'a[name="latest"]',
@@ -53,6 +62,8 @@ module Jsystant
           }
         },
         :jquery => {
+          :download => "http://code.jquery.com/jquery-<%= @version %>.min.js",
+          :vendor => true,
           :latest_version => {
             :url => "http://jquery.com/",
             :css => "p.jq-version",
@@ -60,14 +71,24 @@ module Jsystant
           }
         },
         :underscorejs => {
+          :download => "https://github.com/documentcloud/underscore/raw/<%= @version %>/underscore-min.js",
+          :vendor => true,
           :latest_version => {
             :url => "http://documentcloud.github.com/underscore/",
             :css => 'a[href="underscore-min.js"]',
             :regexp => /^Production Version \(([\d.]+)\)$/
           }
+        },
+        :backbone => {
+          :download => "https://github.com/documentcloud/backbone/raw/<%= @version %>/backbone-min.js",
+          :vendor => true,
+          :latest_version => {
+            :url => "http://documentcloud.github.com/backbone/",
+            :css => 'a[href="backbone-min.js"]',
+            :regexp => /^Production Version \(([\d.]+)\)$/
+          }
         }
       }
     end
-
   end
 end
