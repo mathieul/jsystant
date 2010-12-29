@@ -28,6 +28,7 @@ module Jsystant
       download_library(:require, :latest, :latest)
       download_library(:underscore, :latest)
       download_library(:backbone, :latest)
+      download_library(:handlebars, :latest)
     end
 
     desc "outdated [VENDOR_DIR]", "Returns the list of outdated libraries"

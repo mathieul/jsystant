@@ -15,7 +15,6 @@ module Jsystant
       info = libraries_config[name]
       raise "Unknown library #{name}!" unless info
       version = latest_version(info[:latest_version]) if version == :latest
-      raise "Unknown version for library #{name.inspect}" unless version
 
       jquery = nil unless info[:other_download]
       jquery = latest_version(libraries_config[:jquery][:latest_version]) if jquery == :latest
@@ -40,7 +39,7 @@ module Jsystant
         name, jquery = match[1].intern, nil
         version = latest_version(libraries_config[name][:latest_version])
       else
-        raise "Unknown library #{file_name}"
+        return file_name
       end
 
       info = libraries_config[name]
@@ -71,6 +70,7 @@ module Jsystant
     end
 
     def latest_version(config)
+      return nil if config.nil?
       doc = Nokogiri::HTML(open(config[:url]))
       info = doc.css(config[:css]).first.content
       info.sub!(config[:regexp], '\1')
@@ -121,6 +121,11 @@ module Jsystant
             :css => 'a[href="backbone-min.js"]',
             :regexp => /^Production Version \(([\d.]+)\)$/
           }
+        },
+        :handlebars => {
+          :download => "http://cloud.github.com/downloads/wycats/handlebars.js/handlebars.js",
+          :file_name => "handlebars.js",
+          :vendor => true
         }
       }
     end
