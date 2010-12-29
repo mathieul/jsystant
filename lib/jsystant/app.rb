@@ -23,7 +23,8 @@ module Jsystant
       copy_file("sinatra/app.rb", "app.rb")
       template("sinatra/views/layout.haml.tt", "views/layout.haml")
       template("sinatra/views/index.haml.tt", "views/index.haml")
-      invoke("jsystant:download:requirejs", ["0.2.1", "1.4.4"])
+      invoke("jsystant:download:requirejs", %w(latest latest))
+      # invoke("jsystant:download:requirejs", ["0.2.1", "1.4.4"])
     end
   end
 
