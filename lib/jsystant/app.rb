@@ -1,5 +1,6 @@
 require "thor"
 require "thor/actions"
+require "pathname"
 
 module Jsystant
   class App < Thor
@@ -24,14 +25,21 @@ module Jsystant
       copy_file("sinatra/app.rb", "app.rb")
       template("sinatra/views/layout.haml.tt", "views/layout.haml")
       template("sinatra/views/index.haml.tt", "views/index.haml")
-      download_library(:requirejs, :latest, :latest)
-      download_library(:jquery, :latest)
-      download_library(:underscorejs, :latest)
+      download_library(:require, :latest, :latest)
+      download_library(:underscore, :latest)
       download_library(:backbone, :latest)
-      # invoke("jsystant:download:library", %w(requirejs latest latest))
-      # invoke("jsystant:download:library", %w(jquery latest))
-      # invoke("jsystant:download:library", %w(underscorejs latest))
-      # invoke("jsystant:download:library", %w(backbone latest))
+    end
+
+    desc "outdated [VENDOR_DIR]", "Returns the list of outdated libraries"
+    def outdated(vendor_dir = nil)
+      puts "Searching for outdated JavaScript libraries..."
+      path = Pathname.new(vendor_dir || "public/javascripts/vendor")
+      raise "Directory #{vendor_dir} doesn't exist!" unless path.directory?
+      files = Dir.glob(File.join(path.parent, "*.js")) + path.children.map(&:to_s)
+      files.map { |file| File.basename(file) }.each do |name|
+        latest = latest_library_name(name)
+        puts "#{name} (latest: #{latest})" if latest != name
+      end
     end
   end
 
