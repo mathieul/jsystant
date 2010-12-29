@@ -28,6 +28,7 @@ module Jsystant
       url = ERB.new(url_template).result(context)
       file_name = ERB.new(file_name_template).result(context)
       download_js(url, file_name, :vendor => info[:vendor])
+      # TODO: add download_css
     end
 
     def latest_library_name(file_name)
@@ -100,6 +101,18 @@ module Jsystant
             :url => "http://jquery.com/",
             :css => "p.jq-version",
             :regexp => /^Current Release: v([\d.]+)$/
+          }
+        },
+        :jqueryui => {
+          :download => "http://ajax.googleapis.com/ajax/libs/jqueryui/<%= @version %>/jquery-ui.min.js",
+          :file_name => "jqueryui-<%= @version %>-min.js",
+          :css => "http://ajax.googleapis.com/ajax/libs/jqueryui/<%= @version %>/themes/base/jquery-ui.css",
+          :css_name => "jqueryui-<%= @version %>.css",
+          :vendor => true,
+          :latest_version => {
+            :url => "http://jqueryui.com/",
+            :css => "#home-download ul:first li:first",
+            :regexp => /^Stable\s+\(([\d.]+): jQuery .*\)$/
           }
         },
         :underscore => {

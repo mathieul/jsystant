@@ -26,6 +26,7 @@ module Jsystant
       template("sinatra/views/layout.haml.tt", "views/layout.haml")
       template("sinatra/views/index.haml.tt", "views/index.haml")
       download_library(:require, :latest, :latest)
+      download_library(:jqueryui, :latest)
       download_library(:underscore, :latest)
       download_library(:backbone, :latest)
       download_library(:handlebars, :latest)
