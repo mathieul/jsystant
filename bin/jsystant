@@ -3,6 +3,6 @@
 
 $LOAD_PATH.unshift(File.expand_path("../../lib", __FILE__))
 
-require "jsystant/app"
+require "jsystant"
 
 Jsystant::App.start
