@@ -139,6 +139,11 @@ module Jsystant
           :download => "http://cloud.github.com/downloads/wycats/handlebars.js/handlebars.js",
           :file_name => "handlebars.js",
           :vendor => true
+        },
+        :json2 => {
+          :download => "https://github.com/douglascrockford/JSON-js/raw/master/json2.js",
+          :file_name => "json2.js",
+          :vendor => "true"
         }
       }
     end

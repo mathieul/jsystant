@@ -3,12 +3,17 @@
 
 $LOAD_PATH.unshift(File.expand_path("../../lib", __FILE__))
 
-require "rubygems"
-require "ap"
+# assuming we're debugging if using a path to run jsystant
+debug_mode = true if $0 != File.basename(__FILE__)
+
+require "rubygems" if RUBY_VERSION[0..2].to_f < 1.9
 require "jsystant"
+
+require "ap" if debug_mode
 
 begin
   Jsystant::App.start
-# rescue Exception => ex
-#   STDERR.puts "#{File.basename(__FILE__)}: #{ex}"
+rescue Exception => ex
+  STDERR.puts "#{File.basename(__FILE__)}: #{ex}"
+  raise if debug_mode
 end
