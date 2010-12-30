@@ -15,6 +15,7 @@ module Jsystant
     method_option :destroy, :aliases => '-d', :default => false,
       :type => :boolean, :desc => "Destroy files"
     method_option :sinatra, :default => true, :type => :boolean, :desc => "Install scaffold for Sinatra"
+    method_option :compass, :default => true, :type => :boolean, :desc => "Install scaffold for Compass"
 
     def create(project)
       self.behavior = :revoke if options[:destroy]
@@ -25,6 +26,10 @@ module Jsystant
         copy_file "sinatra/app.rb", "app.rb"
         template "sinatra/views/layout.haml.tt", "views/layout.haml"
         template "sinatra/views/index.haml.tt", "views/index.haml"
+      end
+      if options[:compass]
+        copy_file "compass/config/compass.rb", "config/compass.rb"
+        directory "compass/src", "views/stylesheets"
       end
       # download_library(:require, :latest, :latest)
       # download_library(:jqueryui, :latest)
