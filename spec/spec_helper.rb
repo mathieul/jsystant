@@ -18,6 +18,7 @@ RSpec.configure do |config|
 
     result
   end
+  alias :silence :capture
 
   def destination_root
     File.join(File.dirname(__FILE__), 'sandbox')
