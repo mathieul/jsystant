@@ -18,15 +18,15 @@ module Jsystant
     def create(project)
       self.behavior = :revoke if options[:destroy]
       directory("create", project)
-      self.destination_root = project
+      self.destination_root = File.join(self.destination_root, project)
       copy_file("sinatra/app.rb", "app.rb")
       template("sinatra/views/layout.haml.tt", "views/layout.haml")
       template("sinatra/views/index.haml.tt", "views/index.haml")
-      download_library(:require, :latest, :latest)
-      download_library(:jqueryui, :latest)
-      download_library(:underscore, :latest)
-      download_library(:backbone, :latest)
-      download_library(:handlebars, :latest)
+      # download_library(:require, :latest, :latest)
+      # download_library(:jqueryui, :latest)
+      # download_library(:underscore, :latest)
+      # download_library(:backbone, :latest)
+      # download_library(:handlebars, :latest)
     end
 
     desc "outdated [VENDOR_DIR]", "Returns the list of outdated libraries"

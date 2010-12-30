@@ -1,11 +1,11 @@
 require File.expand_path('../../lib/jsystant', __FILE__)
 require 'rubygems'
-require 'spec'
-# require 'diff/lcs'
-# require 'fakeweb'
+require 'rspec'
+require 'diff/lcs'
+require 'fakeweb'
 require 'stringio'
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   def capture(stream)
     begin
       stream = stream.to_s
