@@ -36,7 +36,7 @@ module Jsystant
     def outdated(vendor_dir = nil)
       puts "Searching for outdated JavaScript libraries..."
       path = Pathname.new(vendor_dir || "public/javascripts/vendor")
-      raise "Directory #{vendor_dir} doesn't exist!" unless path.directory?
+      raise "'#{vendor_dir}': directory doesn't exist" unless path.directory?
       files = Dir.glob(File.join(path.parent, "*.js")) + path.children.map(&:to_s)
       files.map { |file| File.basename(file) }.each do |name|
         latest = latest_library_name(name)

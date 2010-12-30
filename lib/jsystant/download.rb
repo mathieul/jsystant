@@ -13,7 +13,7 @@ module Jsystant
       jquery = jquery.intern unless jquery.nil?
 
       info = libraries_config[name]
-      raise "Unknown library #{name}!" unless info
+      raise "'#{name}': library doesn't exist" unless info
       version = latest_version(info[:latest_version]) if version == :latest
 
       jquery = nil unless info[:other_download]

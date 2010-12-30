@@ -3,7 +3,12 @@
 
 $LOAD_PATH.unshift(File.expand_path("../../lib", __FILE__))
 
+require "rubygems"
 require "ap"
 require "jsystant"
 
-Jsystant::App.start
+begin
+  Jsystant::App.start
+rescue Exception => ex
+  STDERR.puts "#{File.basename(__FILE__)}: #{ex}"
+end
