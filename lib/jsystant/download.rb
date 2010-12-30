@@ -9,8 +9,8 @@ module Jsystant
     RE_ONE_VERSION = /^(.*)-([\d.]+)-min.js$/
 
     def download_library(name, version, jquery = nil)
-      name, version = name.intern, version.intern
-      jquery = jquery.intern unless jquery.nil?
+      name, version = name.to_sym, version.to_sym
+      jquery = jquery.to_sym unless jquery.nil?
 
       info = libraries_config[name]
       raise "'#{name}': library doesn't exist" unless info
@@ -33,11 +33,11 @@ module Jsystant
 
     def latest_library_name(file_name)
       if match = RE_TWO_VERSIONS.match(file_name)
-        name = match[1].intern
+        name = match[1].to_sym
         version = latest_version(libraries_config[name][:latest_version])
         jquery = latest_version(libraries_config[:jquery][:latest_version])
       elsif match = RE_ONE_VERSION.match(file_name)
-        name, jquery = match[1].intern, nil
+        name, jquery = match[1].to_sym, nil
         version = latest_version(libraries_config[name][:latest_version])
       else
         return file_name
@@ -58,7 +58,7 @@ module Jsystant
     def create_context_with(parameters)
       context = Object.new
       parameters.each do |name, value|
-        context.instance_variable_set("@#{name}".intern, value)
+        context.instance_variable_set("@#{name}".to_sym, value)
       end
       context.instance_eval { binding }
     end

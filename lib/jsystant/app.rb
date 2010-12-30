@@ -7,8 +7,6 @@ module Jsystant
     include Thor::Actions
     include Download
 
-    attr_accessor :project
-
     source_root File.expand_path("../../../templates", __FILE__)
     add_runtime_options!
     check_unknown_options!
@@ -18,7 +16,6 @@ module Jsystant
       :type => :boolean, :desc => "Destroy files"
 
     def create(project)
-      self.project = project
       self.behavior = :revoke if options[:destroy]
       directory("create", project)
       self.destination_root = project

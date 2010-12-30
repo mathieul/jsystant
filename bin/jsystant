@@ -9,6 +9,6 @@ require "jsystant"
 
 begin
   Jsystant::App.start
-rescue Exception => ex
-  STDERR.puts "#{File.basename(__FILE__)}: #{ex}"
+# rescue Exception => ex
+#   STDERR.puts "#{File.basename(__FILE__)}: #{ex}"
 end
