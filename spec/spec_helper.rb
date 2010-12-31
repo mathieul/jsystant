@@ -2,8 +2,10 @@ require File.expand_path('../../lib/jsystant', __FILE__)
 require 'rubygems'
 require 'rspec'
 require 'diff/lcs'
-require 'fakeweb'
 require 'stringio'
+
+require 'fakeweb'
+FakeWeb.allow_net_connect = false
 
 RSpec.configure do |config|
   def capture(stream)

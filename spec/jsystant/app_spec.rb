@@ -66,8 +66,13 @@ describe Jsystant::App do
     end
 
     it "installs require.js when --require" do
+      FakeWeb.register_uri(:get, 'http://requirejs.org/docs/download.html',
+        :body => '<html><body><a href="" name="latest">Latest Release: 1.2.3</a></body></html>')
+      FakeWeb.register_uri(:get, 'http://requirejs.org/docs/release/1.2.3/minified/require.js',
+        :body => 'content for require.js')
       silence(:stdout) { runner(:require => true).create("tomtom") }
-      (@path + "public/javascripts/require-0.2.1-min.js").should be_a_file
+      (@path + "public/javascripts/require-1.2.3-min.js").should be_a_file
+      File.read(@path + "public/javascripts/require-1.2.3-min.js").should == 'content for require.js'
     end
   end
 end

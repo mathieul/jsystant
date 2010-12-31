@@ -19,6 +19,8 @@ module Jsystant
       :type => :boolean, :desc => "Destroy files"
     method_option :sinatra, :default => true, :type => :boolean, :desc => "Install scaffold for Sinatra"
     method_option :compass, :default => true, :type => :boolean, :desc => "Install scaffold for Compass"
+    method_option :require, :default => true, :type => :boolean, :desc => "Install RequireJS"
+    method_option :jquery, :default => true, :type => :boolean, :desc => "Install jQuery"
 
     def create(project)
       self.behavior = :revoke if options[:destroy]
@@ -28,7 +30,15 @@ module Jsystant
       directory "create", "."
       add_sinatra(config) if options[:sinatra]
       add_compass(config) if options[:compass]
-      # download_library(:require, :latest, :latest)
+      if options[:jquery]
+        if options[:require]
+          download_library(:require, :latest, :latest)
+        else
+          download_library(:jquery, :latest)
+        end
+      else
+        download_library(:require, :latest) if options[:require]
+      end
       # download_library(:jqueryui, :latest)
       # download_library(:underscore, :latest)
       # download_library(:backbone, :latest)
