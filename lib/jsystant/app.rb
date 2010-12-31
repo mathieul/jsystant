@@ -21,10 +21,24 @@ module Jsystant
     desc "create PROJECT", "Create a new jsystant project"
     method_option :destroy, :aliases => '-d', :default => false,
       :type => :boolean, :desc => "Destroy files"
-    method_option :sinatra,     :default => true, :type => :boolean, :desc => "Install scaffold for Sinatra"
-    method_option :compass,     :default => true, :type => :boolean, :desc => "Install scaffold for Compass"
-    method_option :lib_require, :default => true, :type => :boolean, :desc => "Install RequireJS"
-    method_option :lib_jquery,  :default => true, :type => :boolean, :desc => "Install jQuery"
+    method_option :sinatra,         :default => true,
+      :type => :string,  :desc => "Install scaffold for Sinatra"
+    method_option :compass,         :default => true,
+      :type => :string,  :desc => "Install scaffold for Compass"
+    method_option :lib_require,     :default => true,
+      :type => :string,  :desc => "Install RequireJS"
+    method_option :lib_jquery,      :default => true,
+      :type => :string,  :desc => "Install jQuery"
+    method_option :lib_jqueryui,    :default => false,
+      :type => :string,  :desc => "Install jQueryUI"
+    method_option :lib_underscore,  :default => false,
+      :type => :string,  :desc => "Install Underscore"
+    method_option :lib_backbone,    :default => false,
+      :type => :string,  :desc => "Install Backbone"
+    method_option :lib_handlebars,  :default => false,
+      :type => :string,  :desc => "Install Handlebars.js"
+    method_option :lib_json2,       :default => false,
+      :type => :string,  :desc => "Install json2.js"
 
     def create(project)
       self.behavior = :revoke if options[:destroy]
@@ -49,11 +63,6 @@ module Jsystant
       lib_options.each do |lib, version|
         download_library(lib, version == true ? :latest : version)
       end
-      # download_library(:jqueryui, :latest)
-      # download_library(:underscore, :latest)
-      # download_library(:backbone, :latest)
-      # download_library(:handlebars, :latest)
-      # download_library(:json2, :latest)
     end
 
     desc "outdated [VENDOR_DIR]", "Returns the list of outdated libraries"
