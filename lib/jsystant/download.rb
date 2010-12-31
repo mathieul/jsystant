@@ -5,6 +5,7 @@ require "open-uri"
 
 module Jsystant
   module Download
+
     RE_TWO_VERSIONS = /^(.*)-([\d.]+)-(.*)-([\d.]+)-min.js$/
     RE_ONE_VERSION = /^(.*)-([\d.]+)-min.js$/
 
@@ -13,11 +14,14 @@ module Jsystant
       jquery = jquery.to_sym unless jquery.nil?
 
       info = libraries_config[name]
+      
       raise "'#{name}': library doesn't exist" unless info
       version = latest_version(info[:latest_version]) if version == :latest
 
       jquery = nil unless info[:other_download]
-      jquery = latest_version(libraries_config[:jquery][:latest_version]) if jquery == :latest
+      if jquery == :latest
+        jquery = latest_version(libraries_config[:lib_jquery][:latest_version])
+      end
 
       if jquery.nil?
         url_template, file_name_template = info[:download], info[:file_name]
@@ -35,7 +39,7 @@ module Jsystant
       if match = RE_TWO_VERSIONS.match(file_name)
         name = match[1].to_sym
         version = latest_version(libraries_config[name][:latest_version])
-        jquery = latest_version(libraries_config[:jquery][:latest_version])
+        jquery = latest_version(libraries_config[:lib_jquery][:latest_version])
       elsif match = RE_ONE_VERSION.match(file_name)
         name, jquery = match[1].to_sym, nil
         version = latest_version(libraries_config[name][:latest_version])
@@ -77,75 +81,6 @@ module Jsystant
       info.sub!(config[:regexp], '\1')
     rescue
       nil
-    end
-
-    def libraries_config
-      {
-        :require => {
-          :download => "http://requirejs.org/docs/release/<%= @version %>/minified/require.js",
-          :file_name => "require-<%= @version %>-min.js",
-          :other_download => "http://requirejs.org/docs/release/<%= @version %>/minified/require-jquery-<%= @jquery %>.js",
-          :other_file_name => "require-<%= @version %>-jquery-<%= @jquery %>-min.js",
-          :vendor => false,
-          :latest_version => {
-            :url => "http://requirejs.org/docs/download.html",
-            :css => 'a[name="latest"]',
-            :regexp => /^Latest Release: ([\d.]+)$/
-          }
-        },
-        :jquery => {
-          :download => "http://code.jquery.com/jquery-<%= @version %>.min.js",
-          :file_name => "jquery-<%= @version %>-min.js",
-          :vendor => true,
-          :latest_version => {
-            :url => "http://jquery.com/",
-            :css => "p.jq-version",
-            :regexp => /^Current Release: v([\d.]+)$/
-          }
-        },
-        :jqueryui => {
-          :download => "http://ajax.googleapis.com/ajax/libs/jqueryui/<%= @version %>/jquery-ui.min.js",
-          :file_name => "jqueryui-<%= @version %>-min.js",
-          :css => "http://ajax.googleapis.com/ajax/libs/jqueryui/<%= @version %>/themes/base/jquery-ui.css",
-          :css_name => "jqueryui-<%= @version %>.css",
-          :vendor => true,
-          :latest_version => {
-            :url => "http://jqueryui.com/",
-            :css => "#home-download ul:first li:first",
-            :regexp => /^Stable\s+\(([\d.]+): jQuery .*\)$/
-          }
-        },
-        :underscore => {
-          :download => "https://github.com/documentcloud/underscore/raw/<%= @version %>/underscore-min.js",
-          :file_name => "underscore-<%= @version %>-min.js",
-          :vendor => true,
-          :latest_version => {
-            :url => "http://documentcloud.github.com/underscore/",
-            :css => 'a[href="underscore-min.js"]',
-            :regexp => /^Production Version \(([\d.]+)\)$/
-          }
-        },
-        :backbone => {
-          :download => "https://github.com/documentcloud/backbone/raw/<%= @version %>/backbone-min.js",
-          :file_name => "backbone-<%= @version %>-min.js",
-          :vendor => true,
-          :latest_version => {
-            :url => "http://documentcloud.github.com/backbone/",
-            :css => 'a[href="backbone-min.js"]',
-            :regexp => /^Production Version \(([\d.]+)\)$/
-          }
-        },
-        :handlebars => {
-          :download => "http://cloud.github.com/downloads/wycats/handlebars.js/handlebars.js",
-          :file_name => "handlebars.js",
-          :vendor => true
-        },
-        :json2 => {
-          :download => "https://github.com/douglascrockford/JSON-js/raw/master/json2.js",
-          :file_name => "json2.js",
-          :vendor => "true"
-        }
-      }
     end
   end
 end

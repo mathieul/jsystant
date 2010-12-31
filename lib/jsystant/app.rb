@@ -4,11 +4,15 @@ require "pathname"
 
 require "jsystant/directory_config"
 require "jsystant/download"
+require "jsystant/download_config"
 
 module Jsystant
   class App < Thor
     include Thor::Actions
     include Download
+    include DownloadConfig
+
+    BUILT_IN_LIBS = [:lib_require, :lib_jquery]
 
     source_root File.expand_path("../../../templates", __FILE__)
     add_runtime_options!
@@ -17,10 +21,10 @@ module Jsystant
     desc "create PROJECT", "Create a new jsystant project"
     method_option :destroy, :aliases => '-d', :default => false,
       :type => :boolean, :desc => "Destroy files"
-    method_option :sinatra, :default => true, :type => :boolean, :desc => "Install scaffold for Sinatra"
-    method_option :compass, :default => true, :type => :boolean, :desc => "Install scaffold for Compass"
-    method_option :require, :default => true, :type => :boolean, :desc => "Install RequireJS"
-    method_option :jquery, :default => true, :type => :boolean, :desc => "Install jQuery"
+    method_option :sinatra,     :default => true, :type => :boolean, :desc => "Install scaffold for Sinatra"
+    method_option :compass,     :default => true, :type => :boolean, :desc => "Install scaffold for Compass"
+    method_option :lib_require, :default => true, :type => :boolean, :desc => "Install RequireJS"
+    method_option :lib_jquery,  :default => true, :type => :boolean, :desc => "Install jQuery"
 
     def create(project)
       self.behavior = :revoke if options[:destroy]
@@ -30,14 +34,20 @@ module Jsystant
       directory "create", "."
       add_sinatra(config) if options[:sinatra]
       add_compass(config) if options[:compass]
-      if options[:jquery]
-        if options[:require]
-          download_library(:require, :latest, :latest)
+      if options[:lib_jquery]
+        if options[:lib_require]
+          download_library(:lib_require, :latest, :latest)
         else
-          download_library(:jquery, :latest)
+          download_library(:lib_jquery, :latest)
         end
       else
-        download_library(:require, :latest) if options[:require]
+        download_library(:lib_require, :latest) if options[:lib_require]
+      end
+      lib_options = options.reject do |name, value|
+        name !~ /^lib_/ || value == false || BUILT_IN_LIBS.include?(name.to_sym)
+      end
+      lib_options.each do |lib, version|
+        download_library(lib, version == true ? :latest : version)
       end
       # download_library(:jqueryui, :latest)
       # download_library(:underscore, :latest)

@@ -25,7 +25,7 @@ describe Jsystant::App do
       (@path + "app.rb").should_not be_a_file
       (@path + "views/stylesheets/screen.sass" ).should_not be_a_file
     end
-
+    
     it "installs scaffold for Sinatra when --sinatra" do
       silence(:stdout) { runner(:sinatra => true).create("tomtom") }
       (@path + "app.rb").should be_a_file
@@ -33,7 +33,7 @@ describe Jsystant::App do
       (@path + "views/layout.haml").should be_a_file
       (@path + "views/index.haml").should be_a_file
     end
-
+    
     it "installs proper scaffold for Compass when --compass" do
       silence(:stdout) { runner(:compass => true).create("tomtom") }
       (@path + "compass.rb").should be_a_file
@@ -48,7 +48,7 @@ describe Jsystant::App do
       (ppath + "_layout.sass").should be_a_file
       (ppath + "_page.sass").should be_a_file
     end
-
+    
     it "installs proper scaffold for Compass when --sinatra and --compass" do
       silence(:stdout) { runner(:sinatra => true, :compass => true).create("tomtom") }
       (@path + "config" + "compass.rb").should be_a_file
@@ -64,29 +64,29 @@ describe Jsystant::App do
       (ppath + "_layout.sass").should be_a_file
       (ppath + "_page.sass").should be_a_file
     end
-
+    
     it "installs require.js when --require" do
       FakeWeb.register_uri(:get, 'http://requirejs.org/docs/download.html',
         :body => '<html><body><a href="" name="latest">Latest Release: 1.2.3</a></body></html>')
       FakeWeb.register_uri(:get, 'http://requirejs.org/docs/release/1.2.3/minified/require.js',
         :body => 'content for require.js')
-      silence(:stdout) { runner(:require => true).create("tomtom") }
+      silence(:stdout) { runner(:lib_require => true).create("tomtom") }
       jpath = @path + "public/javascripts"
       (jpath + "require-1.2.3-min.js").should be_a_file
       File.read(jpath + "require-1.2.3-min.js").should == 'content for require.js'
     end
-
+    
     it "installs jQuery when --jquery" do
       FakeWeb.register_uri(:get, 'http://jquery.com/',
         :body => '<html><body><p class="jq-version">Current Release: v1.4.5</p></body></html>')
       FakeWeb.register_uri(:get, 'http://code.jquery.com/jquery-1.4.5.min.js',
         :body => 'content for jQuery')
-      silence(:stdout) { runner(:jquery => true).create("tomtom") }
+      silence(:stdout) { runner(:lib_jquery => true).create("tomtom") }
       vpath = @path + "public/javascripts/vendor"
       (vpath + "jquery-1.4.5-min.js").should be_a_file
       File.read(vpath + "jquery-1.4.5-min.js").should == 'content for jQuery'
     end
-
+    
     it "installs jQuery with integrated require.js support when --jquery && --require" do
       FakeWeb.register_uri(:get, 'http://jquery.com/',
         :body => '<html><body><p class="jq-version">Current Release: v0.1.2</p></body></html>')
@@ -94,10 +94,28 @@ describe Jsystant::App do
         :body => '<html><body><a href="" name="latest">Latest Release: 1.2.3</a></body></html>')
       FakeWeb.register_uri(:get, 'http://requirejs.org/docs/release/1.2.3/minified/require-jquery-0.1.2.js',
         :body => 'content for jQuery and require.js')
-      silence(:stdout) { runner(:jquery => true, :require => true).create("tomtom") }
+      silence(:stdout) { runner(:lib_jquery => true, :lib_require => true).create("tomtom") }
       jpath = @path + "public/javascripts"
       (jpath + "require-1.2.3-jquery-0.1.2-min.js").should be_a_file
       File.read(jpath + "require-1.2.3-jquery-0.1.2-min.js").should == 'content for jQuery and require.js'
+    end
+
+    it "installs other versioned JavaScript libraries when the option is set" do
+      FakeWeb.register_uri(:get, 'http://latest.example.com/',
+        :body => '<html><body>v1.2</body></html>')
+      FakeWeb.register_uri(:get, 'http://download.example.com/lib-1.2-production.js',
+        :body => 'content for lib')
+      Jsystant::App.add_library(:lib_example, :download  => 'http://download.example.com/lib-<%= @version %>-production.js',
+                                              :file_name => 'lib-<%= @version %>-min.js',
+                                              :vendor    => true,
+                                              :latest_version => {
+                                                :url => 'http://latest.example.com',
+                                                :css => 'body',
+                                                :regexp => /^v([\d.]+)$/})
+      silence(:stdout) { runner(:lib_example => true).create("tomtom") }
+      vpath = @path + "public/javascripts/vendor"
+      (vpath + "lib-1.2-min.js").should be_a_file
+      File.read(vpath + "lib-1.2-min.js").should == 'content for lib'
     end
   end
 end
