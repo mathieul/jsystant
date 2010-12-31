@@ -2,6 +2,9 @@ require "thor"
 require "thor/actions"
 require "pathname"
 
+require "jsystant/directory_config"
+require "jsystant/download"
+
 module Jsystant
   class App < Thor
     include Thor::Actions
@@ -20,17 +23,11 @@ module Jsystant
     def create(project)
       self.behavior = :revoke if options[:destroy]
       self.destination_root = File.join(self.destination_root, project)
+      config = DirectoryConfig.new(options)
 
       directory "create", "."
-      if options[:sinatra]
-        copy_file "sinatra/app.rb", "app.rb"
-        template "sinatra/views/layout.haml.tt", "views/layout.haml"
-        template "sinatra/views/index.haml.tt", "views/index.haml"
-      end
-      if options[:compass]
-        copy_file "compass/config/compass.rb", "config/compass.rb"
-        directory "compass/src", "views/stylesheets"
-      end
+      add_sinatra(config) if options[:sinatra]
+      add_compass(config) if options[:compass]
       # download_library(:require, :latest, :latest)
       # download_library(:jqueryui, :latest)
       # download_library(:underscore, :latest)
@@ -50,6 +47,18 @@ module Jsystant
         puts "#{name} (latest: #{latest})" if latest != name
       end
     end
-  end
 
+    private
+
+    def add_sinatra(config)
+      copy_file "sinatra/app.rb", "app.rb"
+      template "sinatra/views/layout.haml.tt", "views/layout.haml"
+      template "sinatra/views/index.haml.tt", "views/index.haml"
+    end
+
+    def add_compass(config)
+      copy_file "compass/config/compass.rb", (config.config_path + "compass.rb")
+      directory "compass/src", config.compass_source_path
+    end
+  end
 end

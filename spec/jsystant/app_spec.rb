@@ -34,8 +34,23 @@ describe Jsystant::App do
       (@path + "views/index.haml").should be_a_file
     end
 
-    it "installs scaffold for Compass when --compass" do
+    it "installs proper scaffold for Compass when --compass" do
       silence(:stdout) { runner(:compass => true).create("tomtom") }
+      (@path + "compass.rb").should be_a_file
+      spath = (@path + "src")
+      spath.should be_a_directory
+      (spath + "ie.sass").should be_a_file
+      (spath + "print.sass").should be_a_file
+      (spath + "screen.sass").should be_a_file
+      ppath = (spath + "partials")
+      (ppath + "_blueprint.sass").should be_a_file
+      (ppath + "_form.sass").should be_a_file
+      (ppath + "_layout.sass").should be_a_file
+      (ppath + "_page.sass").should be_a_file
+    end
+
+    it "installs proper scaffold for Compass when --sinatra and --compass" do
+      silence(:stdout) { runner(:sinatra => true, :compass => true).create("tomtom") }
       (@path + "config" + "compass.rb").should be_a_file
       (@path + "views").should be_a_directory
       spath = (@path + "views/stylesheets")
@@ -48,6 +63,11 @@ describe Jsystant::App do
       (ppath + "_form.sass").should be_a_file
       (ppath + "_layout.sass").should be_a_file
       (ppath + "_page.sass").should be_a_file
+    end
+
+    it "installs require.js when --require" do
+      silence(:stdout) { runner(:require => true).create("tomtom") }
+      (@path + "public/javascripts/require-0.2.1-min.js").should be_a_file
     end
   end
 end
